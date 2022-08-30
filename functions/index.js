@@ -4,7 +4,6 @@ import cors from 'cors'
 import { MongoClient } from 'mongodb'
 import 'dotenv/config'
 
-
 const client = new MongoClient(process.env.MONGO_URI)
 const database = client.db('backend-app-node')
 const food = database.collection('food')
@@ -15,7 +14,6 @@ const europeanFood = database.collection('european')
 const asianFood = database.collection('asian')
 const africanFood = database.collection('african')
 
-
 client.connect()
 
 console.log('Mongo connected')
@@ -23,6 +21,12 @@ console.log('Mongo connected')
 const app = express()
 app.use(cors())
 app.use(express.json())
+
+//landing page
+app.get('/', async (req, res) => {
+    const result = await food.find().toArray()
+    res.send(result)
+})
 
 //latin
 app.get('/latin', async (req, res) => {
