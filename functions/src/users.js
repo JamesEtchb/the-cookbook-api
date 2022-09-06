@@ -1,31 +1,36 @@
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 import { MongoClient } from 'mongodb'
+import { secretKey } from '../secret'
+import { app } from 'firebase-admin'
 
 const client = new MongoClient(process.env.MONGO_URI)
 const db = client.db('backend-app-node')
 
-export async function createUser (req, res) {
-    const { email, password } = req.body
-    email = email.toLowerCase()
-    const user = await db.collection('users').add({ email, password })
-    .catch(err => res.status(500).send(err))
-    const token = jwt.sign({ email, id: user.id }, secretKey)
-    res.send({ token })
-}
 
-export async function loginUser(req, res) {
+app.post('/login', (req, res) => {
     const { email, password } = req.body
-    email = email.toLowerCase()
-    const collection = await db.collection('users')
-    .where('email', '==', email)
-    .where('password', '==', password)
-    .catch(err => res.status(500).send(err))
-    const user = collection.docs.map(doc => {
-        let thisUser = doc.data()
-        thisUser.id = doc.id
-        return thisUser
-    }) [0]
-    const token = jwt.sign({ email: user.email, id: user.id }, secretKey)
+    let user = users.find(user => user.email === email && user.password === password)
+    if (!user) {
+        res.status(401).send({ error: 'Invalid email or password' })
+        return
+    }
+    user.password = undefined
+    const token = jwt.sign(user, secretKey, { expiresIn: 'Id' })
     res.send({ token })
-}
+})
+
+app.get('/private', (req, res) => {
+    const token = req.headers.authorization || ''
+    if (!token) {
+        res.status(401).send({ error: 'You must be logged in to see this'})
+        return
+    }
+    jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) {
+            res.status(401).send({ error: 'You must use a valid token to see this' + err})
+            return
+        }
+        res.send({ message: `Welcome ${decoded.email}`})
+    })
+})

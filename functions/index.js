@@ -2,6 +2,7 @@ import functions from 'firebase-functions'
 import { MongoClient } from 'mongodb'
 import express from 'express'
 import cors from 'cors'
+import { createUser, loginUser } from './src/users.js'
 import 'dotenv/config'
 
 const client = new MongoClient(process.env.MONGO_URI)
@@ -22,6 +23,9 @@ console.log('Mongo connected')
 const app = express()
 app.use(cors())
 app.use(express.json())
+
+app.post('/users', createUser)
+app.post('/users/login', loginUser)
 
 //landing page
 app.get('/', async (req, res) => {
