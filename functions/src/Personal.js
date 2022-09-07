@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
-import secretKey from '../secret.js'
+import {secretKey} from '../secret.js'
 
 export async function getPersonal(req, res) {
   const token = req.headers.authorization
