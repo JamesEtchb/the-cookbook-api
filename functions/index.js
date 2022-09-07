@@ -3,18 +3,19 @@ import { MongoClient } from 'mongodb'
 import express from 'express'
 import cors from 'cors'
 import { createUser, loginUser } from './src/users.js'
+import { getPersonal, createPersonal, updatePersonal, deletePersonal } from './src/Personal.js'
 import 'dotenv/config'
 
 const client = new MongoClient(process.env.MONGO_URI)
-const database = client.db('backend-app-node')
+const db = client.db('backend-app-node')
 
-const food = database.collection('food')
-const latinFood = database.collection('latin')
-const northAmericanFood = database.collection('north-american')
-const europeanFood = database.collection('european')
-const asianFood = database.collection('asian')
-const africanFood = database.collection('african')
-const personalFood = database.collection('personal')
+const food = db.collection('food')
+const latinFood = db.collection('latin')
+const northAmericanFood = db.collection('north-american')
+const europeanFood = db.collection('european')
+const asianFood = db.collection('asian')
+const africanFood = db.collection('african')
+const personalFood = db.collection('personal')
 
 client.connect()
 
@@ -84,21 +85,10 @@ app.post('/african', async (req, res) => {
 })
 
 //personal cookbook
-function getPersonal() {
-  app.get('/personal', async (req, res) => {
-    const result = await personalFood.find().toArray()
-    res.send(result)
-  })
-}
-app.get('/personal', async (req, res) => {
-  const result = await personalFood.find().toArray()
-  res.send(result)
-})
-app.post('/personal', async (req, res) => {
-  await personalFood.insertOne(req.body)
-  res.send('New recipe was added succesfully to personal cookbook')
-  getPersonal(req, res)
-})
+app.get('/personal', getPersonal)
+app.post('/personal', createPersonal)
+app.patch('/personal/:personalId', updatePersonal)
+app.delete('/personal/:personalId', deletePersonal)
 
 app.listen(3333, () => console.log('api listening on port 3333'))
 export const api = functions.https.onRequest(app)
