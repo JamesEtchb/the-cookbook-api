@@ -16,6 +16,8 @@ const europeanFood = db.collection('european')
 const asianFood = db.collection('asian')
 const africanFood = db.collection('african')
 const personalFood = db.collection('personal')
+const user = db.collection('users')
+const login = db.collection('users/login')
 
 client.connect()
 
