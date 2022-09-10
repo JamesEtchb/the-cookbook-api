@@ -86,11 +86,22 @@ app.post('/african', async (req, res) => {
   res.send('New recipe was added succesfully to african food')
 })
 
+//adding a personal get and post without jwt will erase this and use other routes once jwt is working
+app.get('personal', async (req, res) => {
+    const result = await personalFood.find().toArray()
+    res.send(result)
+})
+
+app.post('/personal', async (req, res) => {
+    await personalFood.insertOne(req.body)
+    res.send('New recipe was added succesfully to personal cookbook')
+})
+
 //personal cookbook
-app.get('/personal', getPersonal)
-app.post('/personal', createPersonal)
-app.patch('/personal/:personalId', updatePersonal)
-app.delete('/personal/:personalId', deletePersonal)
+// app.get('/personal', getPersonal)
+// app.post('/personal', createPersonal)
+// app.patch('/personal/:personalId', updatePersonal)
+// app.delete('/personal/:personalId', deletePersonal)
 
 // app.listen(3333, () => console.log('api listening on port 3333'))
 export const api = functions.https.onRequest(app)
