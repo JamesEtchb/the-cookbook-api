@@ -87,7 +87,7 @@ app.post('/african', async (req, res) => {
 })
 
 //adding a personal get and post without jwt will erase this and use other routes once jwt is working
-app.get('personal', async (req, res) => {
+app.get('/personal', async (req, res) => {
     const result = await personalFood.find().toArray()
     res.send(result)
 })
